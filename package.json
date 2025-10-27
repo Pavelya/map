@@ -17,7 +17,9 @@
     "validate-task5": "tsx scripts/validate-task5-criteria.ts",
     "validate-task6": "tsx scripts/validate-task6-criteria.ts",
     "validate-task7": "tsx scripts/validate-task7-final.ts",
-    "start-websocket": "tsx scripts/start-websocket-server.ts"
+    "validate-task8": "tsx scripts/validate-task8-criteria.ts",
+    "start-websocket": "tsx scripts/start-websocket-server.ts",
+    "create-admin": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
     "@deck.gl/core": "^8.9.35",
