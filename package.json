@@ -12,7 +12,10 @@
     "validate-schema": "tsx scripts/validate-schema.ts",
     "test-setup": "tsx scripts/test-complete-setup.ts",
     "validate-task2": "tsx scripts/validate-task2-criteria.ts",
-    "validate-task3": "tsx scripts/validate-task3-criteria.ts"
+    "validate-task3": "tsx scripts/validate-task3-criteria.ts",
+    "validate-task4": "tsx scripts/validate-task4-criteria.ts",
+    "validate-task5": "tsx scripts/validate-task5-criteria.ts",
+    "start-websocket": "tsx scripts/start-websocket-server.ts"
   },
   "dependencies": {
     "@deck.gl/core": "^8.9.35",
@@ -29,6 +32,7 @@
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^2.4.3",
     "date-fns": "^2.30.0",
+    "dotenv": "^17.2.3",
     "framer-motion": "^10.16.16",
     "h3-js": "^4.3.0",
     "jsonwebtoken": "^9.0.2",
