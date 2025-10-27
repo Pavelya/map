@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "migrate": "tsx scripts/migrate-supabase.ts",
+    "validate-schema": "tsx scripts/validate-schema.ts",
+    "test-setup": "tsx scripts/test-complete-setup.ts"
   },
   "dependencies": {
     "@deck.gl/core": "^8.9.35",
@@ -55,6 +58,7 @@
     "eslint-config-next": "14.2.0",
     "prettier": "^3.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.3.3"
   }
 }
