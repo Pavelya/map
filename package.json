@@ -15,6 +15,7 @@
     "validate-task3": "tsx scripts/validate-task3-criteria.ts",
     "validate-task4": "tsx scripts/validate-task4-criteria.ts",
     "validate-task5": "tsx scripts/validate-task5-criteria.ts",
+    "validate-task6": "tsx scripts/validate-task6-criteria.ts",
     "start-websocket": "tsx scripts/start-websocket-server.ts"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@sentry/nextjs": "^7.81.1",
     "@supabase/supabase-js": "^2.38.0",
+    "@types/maxmind": "^2.0.5",
     "@upstash/ratelimit": "^0.4.4",
     "@upstash/redis": "^1.25.1",
     "autoprefixer": "^10.4.16",
@@ -38,6 +40,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.294.0",
     "mapbox-gl": "^2.15.0",
+    "maxmind": "^5.0.0",
     "next": "14.2.0",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
