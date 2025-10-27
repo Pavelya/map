@@ -1,5 +1,10 @@
 #!/usr/bin/env tsx
 
+// Load environment variables FIRST
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+dotenv.config({ path: path.join(process.cwd(), '.env.local') });
+
 import { supabase } from '../src/lib/db';
 import { logger } from '../src/lib/logger';
 

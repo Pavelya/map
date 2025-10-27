@@ -16,6 +16,7 @@
     "validate-task4": "tsx scripts/validate-task4-criteria.ts",
     "validate-task5": "tsx scripts/validate-task5-criteria.ts",
     "validate-task6": "tsx scripts/validate-task6-criteria.ts",
+    "validate-task7": "tsx scripts/validate-task7-final.ts",
     "start-websocket": "tsx scripts/start-websocket-server.ts"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "@upstash/redis": "^1.25.1",
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.8.0",
     "date-fns": "^2.30.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^10.16.16",
