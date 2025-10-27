@@ -2,12 +2,13 @@ import { supabase } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { hashFingerprint, hashIP, hashUserAgent } from '@/lib/hash';
 import { verifyCaptcha } from '@/lib/captcha';
-import type { 
-  VoteSubmissionData, 
-  VoteServiceResult, 
-  MatchValidationResult, 
-  FraudDetectionResult,
-  VoteResponse 
+import { detectFraud } from './fraud-detection';
+import { logBlockedVote } from '@/lib/vote-blocker';
+import type {
+  VoteSubmissionData,
+  VoteServiceResult,
+  MatchValidationResult,
+  VoteResponse
 } from '@/types/api';
 
 /**
@@ -81,40 +82,65 @@ export async function submitVote(data: VoteSubmissionData, clientIP: string): Pr
       return voteLimitCheck;
     }
 
-    // 4. Fraud detection
-    const fraudResult = await detectFraud({
-      ...data,
+    // 4. Comprehensive fraud detection
+    const fraudDetectionInput: {
+      matchId: string;
+      fingerprintHash: string;
+      ipHash: string;
+      userAgent: string;
+      location?: {
+        latitude: number;
+        longitude: number;
+        ipLatitude?: number;
+        ipLongitude?: number;
+      };
+    } = {
+      matchId: data.matchId,
       fingerprintHash,
       ipHash,
-      userAgentHash
-    });
+      userAgent: data.userAgent
+    };
 
-    if (fraudResult.isSuspicious) {
-      await logFraudEvent({
+    // Only include location if we have coordinates
+    if (data.location.latitude && data.location.longitude) {
+      fraudDetectionInput.location = {
+        latitude: data.location.latitude,
+        longitude: data.location.longitude,
+        ...(data.location.ipLatitude !== undefined && { ipLatitude: data.location.ipLatitude }),
+        ...(data.location.ipLongitude !== undefined && { ipLongitude: data.location.ipLongitude })
+      };
+    }
+
+    const fraudResult = await detectFraud(fraudDetectionInput);
+
+    // Block vote if fraud score is too high
+    if (fraudResult.shouldBlock) {
+      const blockReason = fraudResult.events
+        .map(e => e.reason)
+        .join('; ');
+
+      logger.warn('Vote blocked due to fraud detection', {
+        matchId: data.matchId,
+        severity: fraudResult.highestSeverity,
+        eventCount: fraudResult.events.length,
+        reasons: blockReason
+      });
+
+      // Log the blocked vote
+      await logBlockedVote({
         matchId: data.matchId,
         fingerprintHash,
         ipHash,
-        reasons: fraudResult.reasons,
-        severity: fraudResult.severity,
-        metadata: {
-          h3Index: data.location.h3Index,
-          userAgent: data.userAgent,
-          timestamp: new Date().toISOString()
-        }
+        teamChoice: data.teamChoice,
+        reason: blockReason,
+        fraudEvents: fraudResult.events
       });
 
-      if (fraudResult.severity === 'critical' || fraudResult.severity === 'high') {
-        logger.warn('Vote blocked due to fraud detection', {
-          matchId: data.matchId,
-          severity: fraudResult.severity,
-          reasons: fraudResult.reasons
-        });
-        return {
-          success: false,
-          error: 'Vote submission blocked',
-          code: 'FRAUD_DETECTED'
-        };
-      }
+      return {
+        success: false,
+        error: 'Vote submission blocked due to suspicious activity',
+        code: 'FRAUD_DETECTED'
+      };
     }
 
     // 5. Submit vote with transaction
@@ -126,8 +152,8 @@ export async function submitVote(data: VoteSubmissionData, clientIP: string): Pr
       userAgentHash,
       h3Index: data.location.h3Index,
       h3Resolution: data.location.h3Resolution,
-      countryCode: data.location.countryCode,
-      cityName: data.location.cityName,
+      ...(data.location.countryCode && { countryCode: data.location.countryCode }),
+      ...(data.location.cityName && { cityName: data.location.cityName }),
       locationSource: data.location.source,
       consentPreciseGeo: data.location.consentPreciseGeo
     });
@@ -269,117 +295,8 @@ export async function checkVoteLimit(
   }
 }
 
-/**
- * Basic fraud detection
- */
-export async function detectFraud(data: {
-  matchId: string;
-  fingerprintHash: string;
-  ipHash: string;
-  userAgentHash: string;
-  location: {
-    h3Index: string;
-    h3Resolution: number;
-  };
-}): Promise<FraudDetectionResult> {
-  const reasons: string[] = [];
-  let severity: 'low' | 'medium' | 'high' | 'critical' = 'low';
-
-  try {
-    // Check for multiple IPs with same fingerprint
-    const { count: ipCount } = await supabase
-      .from('votes_raw')
-      .select('*', { count: 'exact', head: true })
-      .eq('fingerprint_hash', data.fingerprintHash)
-      .eq('match_id', data.matchId)
-      .neq('ip_hash', data.ipHash)
-      .eq('deleted', false);
-
-    if ((ipCount || 0) > 0) {
-      reasons.push('Multiple IP addresses for same fingerprint');
-      severity = 'medium';
-    }
-
-    // Check for multiple fingerprints with same IP
-    const { count: fpCount } = await supabase
-      .from('votes_raw')
-      .select('*', { count: 'exact', head: true })
-      .eq('ip_hash', data.ipHash)
-      .eq('match_id', data.matchId)
-      .neq('fingerprint_hash', data.fingerprintHash)
-      .eq('deleted', false);
-
-    if ((fpCount || 0) > 2) {
-      reasons.push('Multiple fingerprints from same IP');
-      severity = 'high';
-    }
-
-    // Check for rapid voting patterns (same fingerprint, multiple votes in short time)
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-    const { count: recentCount } = await supabase
-      .from('votes_raw')
-      .select('*', { count: 'exact', head: true })
-      .eq('fingerprint_hash', data.fingerprintHash)
-      .gte('voted_at', fiveMinutesAgo)
-      .eq('deleted', false);
-
-    if ((recentCount || 0) > 3) {
-      reasons.push('Rapid voting pattern detected');
-      severity = 'critical';
-    }
-
-    return {
-      isSuspicious: reasons.length > 0,
-      reasons,
-      severity
-    };
-
-  } catch (error) {
-    logger.error('Fraud detection error', { matchId: data.matchId, error });
-    return {
-      isSuspicious: false,
-      reasons: [],
-      severity: 'low'
-    };
-  }
-}
-
-/**
- * Log fraud event
- */
-export async function logFraudEvent(data: {
-  matchId: string;
-  fingerprintHash: string;
-  ipHash: string;
-  reasons: string[];
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  metadata: Record<string, any>;
-}): Promise<void> {
-  try {
-    const { error } = await supabase
-      .from('fraud_events')
-      .insert({
-        match_id: data.matchId,
-        fingerprint_hash: data.fingerprintHash,
-        ip_hash: data.ipHash,
-        detection_reason: data.reasons.join('; '),
-        severity: data.severity,
-        metadata: data.metadata
-      });
-
-    if (error) {
-      logger.error('Failed to log fraud event', { matchId: data.matchId, error });
-    } else {
-      logger.warn('Fraud event logged', {
-        matchId: data.matchId,
-        severity: data.severity,
-        reasons: data.reasons
-      });
-    }
-  } catch (error) {
-    logger.error('Fraud event logging error', { matchId: data.matchId, error });
-  }
-}
+// Note: Old fraud detection functions removed.
+// Now using comprehensive fraud detection from @/services/fraud-detection
 
 /**
  * Submit vote with atomic transaction

@@ -25,6 +25,10 @@ export interface VoteSubmissionData {
     cityName?: string;
     source: 'ip' | 'browser_geo' | 'manual';
     consentPreciseGeo: boolean;
+    latitude?: number;
+    longitude?: number;
+    ipLatitude?: number;
+    ipLongitude?: number;
   };
   captchaToken?: string;
   userAgent: string;
