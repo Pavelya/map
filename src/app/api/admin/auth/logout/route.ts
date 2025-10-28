@@ -4,6 +4,8 @@ import { logout } from '@/services/auth-service';
 import { extractTokenFromHeader } from '@/lib/auth-utils';
 import { logger } from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/admin/auth/logout
  * Logout admin user and invalidate session

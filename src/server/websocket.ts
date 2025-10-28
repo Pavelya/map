@@ -2,7 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { createServer } from 'http';
 import { logger } from '@/lib/logger';
 import { aggregationService } from '@/services/aggregation-service';
-import type { VoteAggregate, MatchStats } from '@/services/aggregation-service';
+import type { MatchStats } from '@/services/aggregation-service';
 
 export interface VoteEvent {
   matchId: string;
@@ -35,7 +35,7 @@ class WebSocketServer {
   private readonly MAX_CONNECTIONS_PER_IP = 10;
 
   constructor() {
-    this.port = parseInt(process.env.WS_PORT || '3001');
+    this.port = parseInt(process.env['WS_PORT'] || '3001');
   }
 
   /**
@@ -51,7 +51,7 @@ class WebSocketServer {
       // Initialize Socket.IO
       this.io = new SocketIOServer(this.server, {
         cors: {
-          origin: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+          origin: process.env['NEXT_PUBLIC_APP_URL'] || "http://localhost:3000",
           methods: ["GET", "POST"],
           credentials: true
         },

@@ -6,6 +6,8 @@ import { checkVoteRateLimit, checkIpRateLimit } from '@/lib/rate-limit';
 import { hashFingerprint, hashIP } from '@/lib/hash';
 import type { ErrorResponse, VoteSubmissionData } from '@/types/api';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Extract client IP address from request headers
  */

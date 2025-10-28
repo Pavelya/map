@@ -3,6 +3,8 @@ import { checkApiRateLimit } from '../../../lib/rate-limit';
 import { successResponse, rateLimitResponse, getClientIdentifier, hashIdentifier, addRateLimitHeaders } from '../../../lib/api-utils';
 import { testRedisConnection } from '../../../lib/redis';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   // Apply rate limiting
   const { identifier } = getClientIdentifier(request);

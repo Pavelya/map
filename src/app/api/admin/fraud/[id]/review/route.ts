@@ -3,6 +3,8 @@ import { logger } from '@/lib/logger';
 import { getAdminFromRequest, getClientIP } from '@/lib/auth';
 import { markFraudEventReviewed } from '@/services/fraud-logger';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/admin/fraud/[id]/review - Mark a fraud event as reviewed
  */

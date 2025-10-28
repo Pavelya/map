@@ -49,7 +49,12 @@ export async function checkAndActivateMatches(): Promise<void> {
 
     // Activate the first match (only one can be active at a time)
     const matchToActivate = matchesToActivate[0];
-    
+
+    if (!matchToActivate) {
+      logger.error('No match found to activate despite length check');
+      return;
+    }
+
     logger.info('Activating scheduled match', {
       matchId: matchToActivate.id,
       title: matchToActivate.title,
@@ -57,10 +62,10 @@ export async function checkAndActivateMatches(): Promise<void> {
     });
 
     // Use system admin ID for automated activation
-    const systemAdminId = process.env.SYSTEM_ADMIN_ID || '00000000-0000-0000-0000-000000000000';
-    
+    const systemAdminId = process.env['SYSTEM_ADMIN_ID'] || '00000000-0000-0000-0000-000000000000';
+
     const result = await activateMatch(matchToActivate.id, systemAdminId);
-    
+
     if (result.success) {
       logger.info('Match activated successfully by scheduler', {
         matchId: matchToActivate.id,
@@ -113,7 +118,7 @@ export async function checkAndEndMatches(): Promise<void> {
     });
 
     // Use system admin ID for automated ending
-    const systemAdminId = process.env.SYSTEM_ADMIN_ID || '00000000-0000-0000-0000-000000000000';
+    const systemAdminId = process.env['SYSTEM_ADMIN_ID'] || '00000000-0000-0000-0000-000000000000';
 
     // End all matches that should be ended
     for (const match of matchesToEnd) {
@@ -225,18 +230,28 @@ export async function getScheduledActions(): Promise<{
       .order('end_time', { ascending: true })
       .limit(1);
 
-    return {
-      nextActivation: nextToActivate?.[0] ? {
+    const result: {
+      nextActivation?: { matchId: string; title: string; startTime: string };
+      nextEnd?: { matchId: string; title: string; endTime: string };
+    } = {};
+
+    if (nextToActivate?.[0]) {
+      result.nextActivation = {
         matchId: nextToActivate[0].id,
         title: nextToActivate[0].title,
         startTime: nextToActivate[0].start_time
-      } : undefined,
-      nextEnd: nextToEnd?.[0] ? {
+      };
+    }
+
+    if (nextToEnd?.[0]) {
+      result.nextEnd = {
         matchId: nextToEnd[0].id,
         title: nextToEnd[0].title,
         endTime: nextToEnd[0].end_time
-      } : undefined
-    };
+      };
+    }
+
+    return result;
   } catch (error) {
     logger.error('Error getting scheduled actions', {
       error: error instanceof Error ? error.message : 'Unknown error'

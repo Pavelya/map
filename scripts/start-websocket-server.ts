@@ -14,7 +14,7 @@ async function startServer() {
     await webSocketServer.start();
     
     logger.info('WebSocket server started successfully');
-    logger.info(`Server running on port ${process.env.WS_PORT || 3001}`);
+    logger.info(`Server running on port ${process.env['WS_PORT'] || 3001}`);
     logger.info('Press Ctrl+C to stop the server');
     
   } catch (error) {

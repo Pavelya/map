@@ -10,6 +10,8 @@ import {
   getFraudEventsByType
 } from '@/services/fraud-stats';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/fraud/stats - Get fraud statistics
  * Query params:

@@ -2,8 +2,8 @@ import { Redis } from '@upstash/redis';
 import { logger } from './logger';
 
 // Validate required environment variables
-const UPSTASH_REDIS_REST_URL = process.env.UPSTASH_REDIS_REST_URL;
-const UPSTASH_REDIS_REST_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+const UPSTASH_REDIS_REST_URL = process.env['UPSTASH_REDIS_REST_URL'];
+const UPSTASH_REDIS_REST_TOKEN = process.env['UPSTASH_REDIS_REST_TOKEN'];
 
 if (!UPSTASH_REDIS_REST_URL) {
   throw new Error('UPSTASH_REDIS_REST_URL environment variable is required');

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkApiRateLimit, checkVoteRateLimit, checkIpRateLimit } from '../lib/rate-limit';
-import { rateLimitResponse, addRateLimitHeaders, getClientIdentifier, hashIdentifier } from '../lib/api-utils';
+import { rateLimitResponse, getClientIdentifier, hashIdentifier } from '../lib/api-utils';
 import { logger } from '../lib/logger';
 
 export interface RateLimitMiddlewareOptions {

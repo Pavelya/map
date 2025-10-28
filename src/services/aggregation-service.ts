@@ -3,8 +3,8 @@ import { logger } from '@/lib/logger';
 import { cache } from '@/lib/cache';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+  process.env['SUPABASE_SERVICE_ROLE_KEY']!
 );
 
 export interface VoteAggregate {
@@ -231,7 +231,7 @@ class AggregationService {
         if (!acc[vote.matchId]) {
           acc[vote.matchId] = [];
         }
-        acc[vote.matchId].push(vote);
+        acc[vote.matchId]!.push(vote);
         return acc;
       }, {} as Record<string, BulkVote[]>);
 

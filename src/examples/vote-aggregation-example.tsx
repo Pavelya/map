@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useVoteSocket } from '@/hooks/useVoteSocket';
 import { aggregationService } from '@/services/aggregation-service';
 import { formatAggregatesForMap, calculateDominance } from '@/lib/aggregation-utils';

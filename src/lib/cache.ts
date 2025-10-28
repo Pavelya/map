@@ -13,12 +13,12 @@ class CacheService {
     try {
       const key = `aggregates:${matchId}`;
       const cached = await redis.get(key);
-      
-      if (cached) {
+
+      if (cached && typeof cached === 'string') {
         logger.debug('Cache hit for match aggregates', { matchId });
         return JSON.parse(cached);
       }
-      
+
       logger.debug('Cache miss for match aggregates', { matchId });
       return null;
     } catch (error) {
@@ -47,12 +47,12 @@ class CacheService {
     try {
       const key = `stats:${matchId}`;
       const cached = await redis.get(key);
-      
-      if (cached) {
+
+      if (cached && typeof cached === 'string') {
         logger.debug('Cache hit for match stats', { matchId });
         return JSON.parse(cached);
       }
-      
+
       logger.debug('Cache miss for match stats', { matchId });
       return null;
     } catch (error) {

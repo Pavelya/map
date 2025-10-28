@@ -162,20 +162,28 @@ export function formatMatchForDisplay(match: Match): {
   const timeUntilStart = getMatchTimeUntilStart(match);
   const active = isMatchActive(match);
 
+  const teamA: { name: string; color: string; logoUrl?: string } = {
+    name: match.teamAName,
+    color: match.teamAColor,
+  };
+  if (match.teamALogoUrl) {
+    teamA.logoUrl = match.teamALogoUrl;
+  }
+
+  const teamB: { name: string; color: string; logoUrl?: string } = {
+    name: match.teamBName,
+    color: match.teamBColor,
+  };
+  if (match.teamBLogoUrl) {
+    teamB.logoUrl = match.teamBLogoUrl;
+  }
+
   return {
     id: match.id,
     title: match.title,
     teams: {
-      teamA: {
-        name: match.teamAName,
-        color: match.teamAColor,
-        logoUrl: match.teamALogoUrl
-      },
-      teamB: {
-        name: match.teamBName,
-        color: match.teamBColor,
-        logoUrl: match.teamBLogoUrl
-      }
+      teamA,
+      teamB
     },
     schedule: {
       startTime: match.startTime,
@@ -184,19 +192,34 @@ export function formatMatchForDisplay(match: Match): {
       endTimeFormatted: endTime.toLocaleString(),
       duration: `${Math.floor(duration / 60)}h ${duration % 60}m`
     },
-    status: {
-      current: match.status,
-      isActive: active,
-      canVote: active,
-      timeRemaining: active ? timeRemaining.formattedTime : undefined,
-      timeUntilStart: !timeUntilStart.hasStarted ? timeUntilStart.formattedTime : undefined
-    },
+    status: (() => {
+      const status: {
+        current: string;
+        isActive: boolean;
+        canVote: boolean;
+        timeRemaining?: string;
+        timeUntilStart?: string;
+      } = {
+        current: match.status,
+        isActive: active,
+        canVote: active,
+      };
+      const timeRemainingStr = active ? timeRemaining.formattedTime : undefined;
+      const timeUntilStartStr = !timeUntilStart.hasStarted ? timeUntilStart.formattedTime : undefined;
+      if (timeRemainingStr) {
+        status.timeRemaining = timeRemainingStr;
+      }
+      if (timeUntilStartStr) {
+        status.timeUntilStart = timeUntilStartStr;
+      }
+      return status;
+    })(),
     settings: {
       allowPreciseGeo: match.allowPreciseGeo,
       requireCaptcha: match.requireCaptcha,
       maxVotesPerUser: match.maxVotesPerUser
     },
-    description: match.description
+    ...(match.description ? { description: match.description } : {})
   };
 }
 

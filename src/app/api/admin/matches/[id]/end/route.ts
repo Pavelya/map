@@ -3,6 +3,8 @@ import { logger } from '@/lib/logger';
 import { getAdminFromRequest, getClientIP } from '@/lib/auth';
 import { endMatch } from '@/services/match-service';
 
+export const dynamic = 'force-dynamic';
+
 interface RouteParams {
   params: {
     id: string;

@@ -18,6 +18,7 @@
     "validate-task6": "tsx scripts/validate-task6-criteria.ts",
     "validate-task7": "tsx scripts/validate-task7-final.ts",
     "validate-task8": "tsx scripts/validate-task8-criteria.ts",
+    "validate-task10": "tsx scripts/validate-task10-criteria.ts",
     "start-websocket": "tsx scripts/start-websocket-server.ts",
     "create-admin": "tsx scripts/create-admin.ts"
   },
@@ -43,7 +44,7 @@
     "h3-js": "^4.3.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.294.0",
-    "mapbox-gl": "^2.15.0",
+    "maplibre-gl": "^5.10.0",
     "maxmind": "^5.0.0",
     "next": "14.2.0",
     "postcss": "^8.4.32",
@@ -60,7 +61,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
-    "@types/mapbox-gl": "^2.7.19",
+    "@types/maplibre-gl": "^1.14.0",
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.42",
     "@types/react-dom": "^18.2.17",

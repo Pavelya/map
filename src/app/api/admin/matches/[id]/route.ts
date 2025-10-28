@@ -4,6 +4,8 @@ import { getAdminFromRequest, getClientIP } from '@/lib/auth';
 import { MatchUpdateSchema } from '@/lib/validations/match';
 import { getMatch, updateMatch, deleteMatch, getMatchStats } from '@/services/match-service';
 
+export const dynamic = 'force-dynamic';
+
 interface RouteParams {
   params: {
     id: string;

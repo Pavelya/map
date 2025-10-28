@@ -1,4 +1,4 @@
-import { kRing, h3ToGeo, geoToH3 } from 'h3-js';
+import { gridDisk, cellToLatLng, latLngToCell } from 'h3-js';
 import { logger } from '@/lib/logger';
 import type { VoteAggregate } from '@/services/aggregation-service';
 
@@ -36,7 +36,7 @@ export function calculateH3Neighbors(h3Index: string, ringSize: number = 1): str
   try {
     logger.debug('Calculating H3 neighbors', { h3Index, ringSize });
     
-    const neighbors = kRing(h3Index, ringSize);
+    const neighbors = gridDisk(h3Index, ringSize);
     
     logger.debug('H3 neighbors calculated', { 
       h3Index, 
@@ -77,11 +77,11 @@ export function aggregateByResolution(votes: Vote[], targetResolution: number): 
       // Convert to target resolution if needed
       if (vote.h3Resolution !== targetResolution) {
         if (vote.lat !== undefined && vote.lng !== undefined) {
-          h3Index = geoToH3(vote.lat, vote.lng, targetResolution);
+          h3Index = latLngToCell(vote.lat, vote.lng, targetResolution);
         } else {
           // Convert from current resolution to target resolution
-          const [lat, lng] = h3ToGeo(vote.h3Index);
-          h3Index = geoToH3(lat, lng, targetResolution);
+          const [lat, lng] = cellToLatLng(vote.h3Index);
+          h3Index = latLngToCell(lat, lng, targetResolution);
         }
       }
 
@@ -168,7 +168,7 @@ export function formatAggregateForMap(aggregate: VoteAggregate): MapLayerAggrega
       return null;
     }
 
-    const [lat, lng] = h3ToGeo(aggregate.locationKey);
+    const [lat, lng] = cellToLatLng(aggregate.locationKey);
     const dominance = calculateDominance(aggregate.teamACount, aggregate.teamBCount);
 
     return {

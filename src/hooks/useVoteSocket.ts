@@ -42,7 +42,7 @@ export function useVoteSocket({
    * Create and configure socket connection
    */
   const createSocket = useCallback(() => {
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
+    const wsUrl = process.env['NEXT_PUBLIC_WS_URL'] || 'http://localhost:3001';
     
     logger.debug('Creating WebSocket connection', { wsUrl, matchId });
 

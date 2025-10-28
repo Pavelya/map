@@ -25,7 +25,7 @@ export async function verifyAdminToken(token: string): Promise<{
   error?: string;
 }> {
   try {
-    const secret = process.env.JWT_SECRET;
+    const secret = process.env['JWT_SECRET'];
     if (!secret) {
       logger.error('JWT_SECRET not configured');
       return {
@@ -103,10 +103,18 @@ export async function getAdminFromRequest(request: Request): Promise<{
   const result = await verifyAdminToken(token);
 
   if (!result.isValid) {
-    return { error: result.error };
+    const response: { admin?: AdminUser; error?: string } = {};
+    if (result.error) {
+      response.error = result.error;
+    }
+    return response;
   }
 
-  return { admin: result.admin };
+  const response: { admin?: AdminUser; error?: string } = {};
+  if (result.admin) {
+    response.admin = result.admin;
+  }
+  return response;
 }
 
 /**
@@ -120,13 +128,16 @@ export function getClientIP(request: Request): string {
   
   if (forwarded) {
     // x-forwarded-for can contain multiple IPs, take the first one
-    return forwarded.split(',')[0].trim();
+    const firstIP = forwarded.split(',')[0];
+    if (firstIP) {
+      return firstIP.trim();
+    }
   }
-  
+
   if (realIP) {
     return realIP;
   }
-  
+
   if (cfConnectingIP) {
     return cfConnectingIP;
   }

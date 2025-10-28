@@ -81,11 +81,16 @@ export async function getRateLimitStatus(key: string): Promise<{
 
     logger.debug('Rate limit status', { key, exists, ttl, data });
 
-    return {
+    const result: { exists: boolean; ttl?: number; data?: string } = {
       exists: exists === 1,
-      ...(ttl > 0 && { ttl }),
-      ...(data && { data }),
     };
+    if (ttl > 0) {
+      result.ttl = ttl;
+    }
+    if (data && typeof data === 'string') {
+      result.data = data;
+    }
+    return result;
   } catch (error) {
     logger.error('Get rate limit status failed', { key, error });
     return { exists: false };

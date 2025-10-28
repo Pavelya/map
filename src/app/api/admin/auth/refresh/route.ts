@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { refreshAccessToken } from '@/services/auth-service';
 import { logger } from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/admin/auth/refresh
  * Refresh access token using refresh token

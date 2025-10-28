@@ -5,6 +5,8 @@ import { MatchSchema, MatchFiltersSchema } from '@/lib/validations/match';
 import { createMatch, listMatches } from '@/services/match-service';
 import { scheduleMatchActivation, scheduleMatchEnd } from '@/services/match-scheduler';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/matches - List all matches with filters
  */

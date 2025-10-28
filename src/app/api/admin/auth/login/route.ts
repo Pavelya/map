@@ -3,6 +3,8 @@ import { authenticateAdmin } from '@/services/auth-service';
 import { logger } from '@/lib/logger';
 import { redis } from '@/lib/redis';
 
+export const dynamic = 'force-dynamic';
+
 const RATE_LIMIT_WINDOW = 900; // 15 minutes in seconds
 const RATE_LIMIT_MAX_ATTEMPTS = 5;
 

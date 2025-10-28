@@ -4,6 +4,8 @@ import { getAdminFromRequest, getClientIP } from '@/lib/auth';
 import { supabase } from '@/lib/db';
 import type { FraudSeverity } from '@/services/fraud-logger';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/fraud - List fraud events with filters
  * Query params:

@@ -1,5 +1,7 @@
 import { logger } from '@/lib/logger'
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   // Test logger on server side
   logger.info('Home page rendered')

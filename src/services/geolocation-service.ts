@@ -243,8 +243,8 @@ export async function getIPLocation(ip: string, h3Resolution: number = 5): Promi
         longitude: ipGeoResult.longitude,
         h3Index,
         h3Resolution,
-        countryCode: ipGeoResult.countryCode || undefined,
-        city: ipGeoResult.city || undefined,
+        ...(ipGeoResult.countryCode && { countryCode: ipGeoResult.countryCode }),
+        ...(ipGeoResult.city && { city: ipGeoResult.city }),
         accuracy: ipGeoResult.accuracy,
         source: 'ip'
       };

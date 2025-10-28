@@ -2,11 +2,17 @@ import { v2 as cloudinary } from 'cloudinary';
 import { logger } from '@/lib/logger';
 
 // Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const cloudName = process.env['CLOUDINARY_CLOUD_NAME'];
+const apiKey = process.env['CLOUDINARY_API_KEY'];
+const apiSecret = process.env['CLOUDINARY_API_SECRET'];
+
+if (cloudName && apiKey && apiSecret) {
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+  });
+}
 
 export interface UploadResult {
   publicUrl: string;
@@ -41,8 +47,12 @@ export async function uploadTeamLogo(
     });
 
     // Upload to Cloudinary with transformations
+    const uploadSource: string = file instanceof Buffer
+      ? `data:image/png;base64,${file.toString('base64')}`
+      : (file as string);
+
     const result = await cloudinary.uploader.upload(
-      file instanceof Buffer ? `data:image/png;base64,${file.toString('base64')}` : file,
+      uploadSource,
       {
         public_id: publicId,
         folder: 'team-logos',

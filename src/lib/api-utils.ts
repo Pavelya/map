@@ -80,11 +80,20 @@ export function getClientIdentifier(request: Request): {
   // Use fingerprint hash as primary identifier, fallback to IP
   const identifier = fingerprintHash || ipAddress;
 
-  return {
-    fingerprintHash: fingerprintHash || undefined,
+  const result: {
+    fingerprintHash?: string;
+    ipAddress: string;
+    identifier: string;
+  } = {
     ipAddress,
     identifier,
   };
+
+  if (fingerprintHash) {
+    result.fingerprintHash = fingerprintHash;
+  }
+
+  return result;
 }
 
 /**
