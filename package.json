@@ -19,6 +19,7 @@
     "validate-task7": "tsx scripts/validate-task7-final.ts",
     "validate-task8": "tsx scripts/validate-task8-criteria.ts",
     "validate-task10": "tsx scripts/validate-task10-criteria.ts",
+    "validate-task12": "tsx scripts/validate-task12-criteria.ts",
     "start-websocket": "tsx scripts/start-websocket-server.ts",
     "create-admin": "tsx scripts/create-admin.ts"
   },
