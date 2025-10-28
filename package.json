@@ -26,6 +26,7 @@
     "@deck.gl/core": "^8.9.35",
     "@deck.gl/geo-layers": "^8.9.35",
     "@deck.gl/layers": "^8.9.35",
+    "@deck.gl/mapbox": "8.9.35",
     "@fingerprintjs/fingerprintjs": "^4.2.1",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-select": "^2.0.0",

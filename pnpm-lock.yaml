@@ -17,6 +17,9 @@ importers:
       '@deck.gl/layers':
         specifier: ^8.9.35
         version: 8.9.36(@deck.gl/core@8.9.36)(@loaders.gl/core@3.4.15)(@luma.gl/core@8.5.21)
+      '@deck.gl/mapbox':
+        specifier: 8.9.35
+        version: 8.9.35(@deck.gl/core@8.9.36)
       '@fingerprintjs/fingerprintjs':
         specifier: ^4.2.1
         version: 4.6.2
@@ -207,6 +210,11 @@ packages:
       '@deck.gl/core': ^8.0.0
       '@loaders.gl/core': ^3.4.13
       '@luma.gl/core': ^8.0.0
+
+  '@deck.gl/mapbox@8.9.35':
+    resolution: {integrity: sha512-3GKbYkB6OF+65Al/F2g0DlGhiQAPnA7/l/9Tl9cFSaaLBUfw2zT/U0kgZe3/4ZyfwQMzmoW6D3Ybb/FB4FKlmg==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
 
   '@deck.gl/mesh-layers@8.9.36':
     resolution: {integrity: sha512-xQ+OSdU3z3HIgaHJfxbcNIxmWYPUBMJZAM+fAbynojGVzGYLJo2MUjUJLtCsw0Ejs3YtnocyuFRM+zObB0I3jw==}
@@ -1165,6 +1173,9 @@ packages:
 
   '@types/jsonwebtoken@9.0.10':
     resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
+
+  '@types/mapbox-gl@2.7.21':
+    resolution: {integrity: sha512-Dx9MuF2kKgT/N22LsMUB4b3acFZh9clVqz9zv1fomoiPoBrJolwYxpWA/9LPO/2N0xWbKi4V+pkjTaFkkx/4wA==}
 
   '@types/maplibre-gl@1.14.0':
     resolution: {integrity: sha512-I6ibscT7UdL1oOqqCz9s1gjcolLaUPkHIIfMLusczTvlsMhjORyS6sE1g4V/NESAOL5KhNQX3/31LJH+OCGjkg==}
@@ -3500,6 +3511,12 @@ snapshots:
       '@math.gl/web-mercator': 3.6.3
       earcut: 2.2.4
 
+  '@deck.gl/mapbox@8.9.35(@deck.gl/core@8.9.36)':
+    dependencies:
+      '@babel/runtime': 7.28.4
+      '@deck.gl/core': 8.9.36
+      '@types/mapbox-gl': 2.7.21
+
   '@deck.gl/mesh-layers@8.9.36(@deck.gl/core@8.9.36)(@loaders.gl/images@3.4.15)(@luma.gl/core@8.5.21)(@luma.gl/engine@8.5.21)(@luma.gl/gltools@8.5.21)(@luma.gl/webgl@8.5.21)':
     dependencies:
       '@babel/runtime': 7.28.4
@@ -4569,6 +4586,10 @@ snapshots:
     dependencies:
       '@types/ms': 2.1.0
       '@types/node': 20.19.23
+
+  '@types/mapbox-gl@2.7.21':
+    dependencies:
+      '@types/geojson': 7946.0.16
 
   '@types/maplibre-gl@1.14.0':
     dependencies:
