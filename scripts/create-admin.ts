@@ -1,5 +1,14 @@
 #!/usr/bin/env tsx
 
+// Load environment variables from .env.local first, then .env
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load .env.local first (takes priority)
+config({ path: resolve(__dirname, '../.env.local') });
+// Then load .env as fallback
+config({ path: resolve(__dirname, '../.env') });
+
 import * as readline from 'readline';
 import { createAdmin } from '../src/services/auth-service';
 import { logger } from '../src/lib/logger';

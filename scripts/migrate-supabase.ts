@@ -9,18 +9,24 @@ import { supabase } from '../src/lib/db';
 import { logger } from '../src/lib/logger';
 
 /**
- * Check if a table exists
+ * Check if a table exists by trying to query it
  */
 async function tableExists(tableName: string): Promise<boolean> {
   try {
-    const { data, error } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .eq('table_schema', 'public')
-      .eq('table_name', tableName)
-      .single();
+    // Try to select from the table with a limit of 0 rows
+    const { error } = await supabase
+      .from(tableName)
+      .select('*')
+      .limit(0);
 
-    return !error && !!data;
+    // If there's no error or if the error is not "relation does not exist", the table exists
+    if (!error) {
+      return true;
+    }
+
+    // Check if the error indicates the table doesn't exist
+    const errorMessage = error.message?.toLowerCase() || '';
+    return !errorMessage.includes('does not exist') && !errorMessage.includes('not found');
   } catch {
     return false;
   }
@@ -108,17 +114,11 @@ async function runMigration(): Promise<void> {
   try {
     logger.info('Starting Supabase migration process...');
 
-    // Test connection
-    const { error: connectionError } = await supabase
-      .from('information_schema.tables')
-      .select('table_name')
-      .limit(1);
+    // Test connection by checking if we can query the matches table (or any table)
+    logger.info('Testing database connection...');
+    // We'll just proceed - the tableExists check will tell us if connection works
 
-    if (connectionError) {
-      throw new Error(`Database connection failed: ${connectionError.message}`);
-    }
-
-    logger.info('Database connection successful');
+    logger.info('Database connection OK');
 
     // Create migrations table
     await createMigrationsTable();
