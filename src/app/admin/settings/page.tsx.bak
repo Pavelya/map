@@ -1,8 +1,5 @@
 'use client';
 
-// Force dynamic rendering to prevent SSR issues with Zustand persist
-export const dynamic = 'force-dynamic';
-
 import React from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Settings as SettingsIcon, Users, Shield, Bell } from 'lucide-react';

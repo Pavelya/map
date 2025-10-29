@@ -84,6 +84,18 @@ export function MapProvider({ children }: MapProviderProps) {
 export function useMapContext(): MapContextValue {
   const context = useContext(MapContext);
 
+  // During SSR, return safe default values
+  if (typeof window === 'undefined') {
+    return {
+      map: null,
+      isLoaded: false,
+      error: null,
+      setMap: () => {},
+      setIsLoaded: () => {},
+      setError: () => {},
+    };
+  }
+
   if (context === undefined) {
     throw new Error('useMapContext must be used within a MapProvider');
   }

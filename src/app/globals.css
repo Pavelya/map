@@ -25,3 +25,59 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* Fix input text visibility and autofill styles */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+  color-scheme: dark;
+  color: white !important;
+}
+
+/* Override browser autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0 1000px rgb(3 7 18) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  color: white !important;
+}
+
+/* Ensure input text is visible */
+input::placeholder {
+  opacity: 0.5;
+}
+
+/* Ensure select dropdowns are visible */
+select {
+  color: white !important;
+}
+
+select option {
+  background-color: rgb(3 7 18);
+  color: white;
+}
+
+/* Fix color input visibility */
+input[type="color"] {
+  cursor: pointer;
+  border: none;
+}
+
+/* Ensure all form controls in admin pages have white text */
+.admin-page input:not([type="color"]),
+.admin-page textarea,
+.admin-page select {
+  color: white !important;
+}

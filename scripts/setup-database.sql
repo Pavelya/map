@@ -91,6 +91,18 @@ CREATE TABLE IF NOT EXISTS migrations (
     checksum VARCHAR(64) NOT NULL
 );
 
+-- Audit Log Table (for tracking admin actions)
+CREATE TABLE IF NOT EXISTS audit_log (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    admin_id UUID REFERENCES admin_users(id),
+    action_type VARCHAR(50) NOT NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id UUID,
+    changes JSONB,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- ============================================================================
 -- INDEXES
 -- ============================================================================
@@ -115,6 +127,11 @@ CREATE INDEX IF NOT EXISTS idx_aggregates_match ON vote_aggregates(match_id);
 CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status);
 CREATE INDEX IF NOT EXISTS idx_matches_start_time ON matches(start_time);
 CREATE INDEX IF NOT EXISTS idx_matches_end_time ON matches(end_time);
+
+-- Audit log indexes
+CREATE INDEX IF NOT EXISTS idx_audit_admin_id ON audit_log(admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_type_time ON audit_log(action_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_log(entity_type, entity_id, created_at DESC);
 
 -- ============================================================================
 -- FUNCTIONS

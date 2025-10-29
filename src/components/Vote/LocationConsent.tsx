@@ -27,7 +27,7 @@ export function LocationConsent({ checked, onChange, error }: LocationConsentPro
         <div className="flex-1">
           <label
             htmlFor="location-consent"
-            className="text-sm font-medium text-gray-900 cursor-pointer flex items-center gap-2"
+            className="text-sm font-medium text-white cursor-pointer flex items-center gap-2"
           >
             <MapPin className="w-4 h-4 text-gray-500" aria-hidden="true" />
             Share precise location
@@ -38,12 +38,12 @@ export function LocationConsent({ checked, onChange, error }: LocationConsentPro
       {/* Explanation */}
       <div
         id="location-consent-description"
-        className="ml-7 space-y-2 text-sm text-gray-600"
+        className="ml-7 space-y-2 text-sm text-gray-300"
       >
         <div className="flex items-start gap-2">
           <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div>
-            <p className="font-medium text-gray-700 mb-1">Why we need location:</p>
+            <p className="font-medium text-gray-300 mb-1">Why we need location:</p>
             <p>
               Your location helps us display votes on the interactive map and show regional
               voting patterns. We use privacy-preserving H3 spatial indexing to protect your
@@ -53,8 +53,8 @@ export function LocationConsent({ checked, onChange, error }: LocationConsentPro
         </div>
 
         <div className="ml-6">
-          <p className="font-medium text-gray-700 mb-1">What we collect:</p>
-          <ul className="list-disc list-inside space-y-1 text-gray-600">
+          <p className="font-medium text-gray-300 mb-1">What we collect:</p>
+          <ul className="list-disc list-inside space-y-1 text-gray-300">
             <li>
               <strong>With consent:</strong> Browser geolocation (latitude/longitude) converted
               to H3 cell

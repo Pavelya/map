@@ -84,7 +84,8 @@ async function verifyTables(): Promise<boolean> {
     'votes',
     'fraud_events',
     'vote_aggregates',
-    'migrations'
+    'migrations',
+    'audit_log'
   ];
 
   logger.info('Verifying database tables...');

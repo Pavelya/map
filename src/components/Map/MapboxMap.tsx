@@ -21,6 +21,7 @@ export function MapboxMap() {
   const { setMap, setIsLoaded, setError, error } = useMapContext();
   const [isLoading, setIsLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
 
   useEffect(() => {
     // Ensure container exists
@@ -54,16 +55,57 @@ export function MapboxMap() {
 
         // Handle map load event
         map.on('load', () => {
-          console.log('MapLibre map loaded successfully');
+          console.log('[Map] MapLibre map loaded successfully');
           setIsLoaded(true);
           setIsLoading(false);
         });
 
-        // Handle map errors
+        // Tile error tracking
+        let tileErrorCount = 0;
+        const maxTileErrors = 10;
+
+        // Handle map errors with categorization
         map.on('error', (e) => {
-          console.error('Map error:', e.error);
-          setError(new Error(e.error?.message || 'Failed to load map'));
-          setIsLoading(false);
+          const errorMsg = e.error?.message || 'Failed to load map';
+
+          // Categorize error types
+          if (errorMsg.includes('tiles') || errorMsg.includes('source')) {
+            console.error('[Map] Tile loading error:', errorMsg);
+            setError(new Error('Map tiles failed to load. Using fallback tile provider...'));
+            // Don't block - map may still work with cached tiles
+            setIsLoading(false);
+          } else if (errorMsg.includes('style') || errorMsg.includes('glyphs')) {
+            console.error('[Map] Style loading error:', errorMsg);
+            setError(new Error('Map style failed to load. Check your internet connection.'));
+            setIsLoading(false);
+          } else {
+            console.error('[Map] Unknown map error:', e);
+            setError(new Error(`Map error: ${errorMsg}`));
+            setIsLoading(false);
+          }
+        });
+
+        // Monitor tile loading for excessive errors
+        map.on('sourcedataloading', (e) => {
+          if (e.sourceId === 'osm-tiles' && e.tile) {
+            // Log occasionally for debugging
+            if (Math.random() < 0.05) {
+              console.log('[Map] Loading tile from source:', e.sourceId);
+            }
+          }
+        });
+
+        // Track tile-specific errors
+        map.on('error', (e: any) => {
+          if (e.sourceId === 'osm-tiles') {
+            tileErrorCount++;
+            console.warn(`[Map] Tile error (${tileErrorCount}/${maxTileErrors}):`, e);
+
+            if (tileErrorCount >= maxTileErrors) {
+              setError(new Error('Too many tile loading errors. Please check your connection.'));
+              setIsLoading(false);
+            }
+          }
         });
 
         // Handle resize events
@@ -96,7 +138,13 @@ export function MapboxMap() {
   }, [setMap, setIsLoaded, setError, retryCount]);
 
   const handleRetry = () => {
-    setRetryCount((prev) => prev + 1);
+    if (retryCount < maxRetries) {
+      setRetryCount((prev) => prev + 1);
+      setError(null);
+      setIsLoading(true);
+    } else {
+      setError(new Error('Maximum retry attempts reached. Please refresh the page.'));
+    }
   };
 
   return (
@@ -108,7 +156,14 @@ export function MapboxMap() {
       {isLoading && !error && <MapLoadingSkeleton />}
 
       {/* Error state */}
-      {error && <MapError error={error} onRetry={handleRetry} />}
+      {error && (
+        <MapError
+          error={error}
+          onRetry={handleRetry}
+          retryCount={retryCount}
+          maxRetries={maxRetries}
+        />
+      )}
     </>
   );
 }

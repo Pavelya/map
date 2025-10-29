@@ -24,7 +24,7 @@ export function TeamSelector({
 }: TeamSelectorProps) {
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-900">
+      <label className="block text-sm font-medium text-white">
         Choose your team <span className="text-red-600" aria-label="required">*</span>
       </label>
 
@@ -66,12 +66,12 @@ function TeamCard({ team, isSelected, onSelect }: TeamCardProps) {
         ${
           isSelected
             ? 'border-current shadow-lg scale-105'
-            : 'border-gray-200 hover:border-gray-300'
+            : 'border-gray-700 hover:border-gray-600'
         }
       `}
       style={{
         borderColor: isSelected ? team.color : undefined,
-        backgroundColor: isSelected ? `${team.color}10` : 'white',
+        backgroundColor: isSelected ? `${team.color}10` : 'rgb(17 24 39)',
       }}
     >
       {/* Hidden radio input for accessibility */}

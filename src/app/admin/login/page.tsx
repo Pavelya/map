@@ -8,6 +8,9 @@ import { z } from 'zod';
 import { useAdminAuth } from '@/stores/admin-auth';
 import { LayoutDashboard, AlertCircle } from 'lucide-react';
 
+// Force dynamic rendering to prevent SSR issues with Zustand persist
+export const dynamic = 'force-dynamic';
+
 const loginSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
@@ -18,7 +21,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { setAuth, isAuthenticated } = useAdminAuth();
+  const { setAuth, isAuthenticated, hasHydrated } = useAdminAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -31,11 +34,14 @@ export default function AdminLoginPage() {
   });
 
   useEffect(() => {
+    // Wait for hydration before checking auth
+    if (!hasHydrated) return;
+
     // Redirect to matches if already authenticated
     if (isAuthenticated) {
       router.replace('/admin/matches');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, hasHydrated]);
 
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true);
@@ -78,6 +84,11 @@ export default function AdminLoginPage() {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading state while hydrating
+  if (!hasHydrated) {
+    return null;
+  }
 
   // Don't render if already authenticated
   if (isAuthenticated) {

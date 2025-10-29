@@ -1,35 +1,50 @@
 import { z } from 'zod';
 
 export const MatchSchema = z.object({
-  teamAName: z.string().min(1).max(100),
-  teamAColor: z.string().regex(/^#[0-9A-F]{6}$/i),
-  teamALogoUrl: z.string().url().optional(),
-  teamBName: z.string().min(1).max(100),
-  teamBColor: z.string().regex(/^#[0-9A-F]{6}$/i),
-  teamBLogoUrl: z.string().url().optional(),
-  title: z.string().min(1).max(200),
-  description: z.string().max(1000).optional(),
-  startTime: z.string().datetime(),
-  endTime: z.string().datetime(),
+  teamAName: z.string().min(1, 'Team A name is required').max(100),
+  teamAColor: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid color format'),
+  teamALogoUrl: z.string().url().optional().or(z.literal('')),
+  teamBName: z.string().min(1, 'Team B name is required').max(100),
+  teamBColor: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid color format'),
+  teamBLogoUrl: z.string().url().optional().or(z.literal('')),
+  title: z.string().min(1, 'Title is required').max(200),
+  description: z.string().max(1000).optional().or(z.literal('')),
+  startTime: z.string().refine((val) => {
+    // Accept datetime-local format (YYYY-MM-DDTHH:mm) or ISO format
+    const date = new Date(val);
+    return !isNaN(date.getTime());
+  }, 'Invalid start time'),
+  endTime: z.string().refine((val) => {
+    // Accept datetime-local format (YYYY-MM-DDTHH:mm) or ISO format
+    const date = new Date(val);
+    return !isNaN(date.getTime());
+  }, 'Invalid end time'),
   status: z.enum(['draft', 'scheduled', 'active', 'ended', 'cancelled']),
   allowPreciseGeo: z.boolean().default(false),
   requireCaptcha: z.boolean().default(true),
   maxVotesPerUser: z.number().int().min(1).max(10).default(1)
 }).refine(data => new Date(data.endTime) > new Date(data.startTime), {
-  message: "End time must be after start time"
+  message: "End time must be after start time",
+  path: ['endTime']
 });
 
 export const MatchUpdateSchema = z.object({
   teamAName: z.string().min(1).max(100).optional(),
   teamAColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
-  teamALogoUrl: z.string().url().optional(),
+  teamALogoUrl: z.string().url().optional().or(z.literal('')),
   teamBName: z.string().min(1).max(100).optional(),
   teamBColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
-  teamBLogoUrl: z.string().url().optional(),
+  teamBLogoUrl: z.string().url().optional().or(z.literal('')),
   title: z.string().min(1).max(200).optional(),
-  description: z.string().max(1000).optional(),
-  startTime: z.string().datetime().optional(),
-  endTime: z.string().datetime().optional(),
+  description: z.string().max(1000).optional().or(z.literal('')),
+  startTime: z.string().refine((val) => {
+    const date = new Date(val);
+    return !isNaN(date.getTime());
+  }, 'Invalid start time').optional(),
+  endTime: z.string().refine((val) => {
+    const date = new Date(val);
+    return !isNaN(date.getTime());
+  }, 'Invalid end time').optional(),
   status: z.enum(['draft', 'scheduled', 'active', 'ended', 'cancelled']).optional(),
   allowPreciseGeo: z.boolean().optional(),
   requireCaptcha: z.boolean().optional(),
@@ -40,7 +55,8 @@ export const MatchUpdateSchema = z.object({
   }
   return true;
 }, {
-  message: "End time must be after start time"
+  message: "End time must be after start time",
+  path: ['endTime']
 });
 
 export const MatchFiltersSchema = z.object({

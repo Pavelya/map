@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAdminAuth } from '@/stores/admin-auth';
+import { useAuthenticatedFetch } from '@/hooks/useAuthenticatedFetch';
 import { DataTable } from '@/components/Admin/DataTable';
 import type { ColumnDef, PaginationState } from '@tanstack/react-table';
 import type { Match } from '@/types/admin';
@@ -10,8 +11,12 @@ import { Plus, Edit, Trash2, Play, StopCircle, Eye, Search } from 'lucide-react'
 import { format } from 'date-fns';
 import { MatchFormModal } from '@/components/Admin/MatchFormModal';
 
+// Force dynamic rendering to prevent SSR issues with Zustand persist
+export const dynamic = 'force-dynamic';
+
 export default function MatchesPage() {
   const { token } = useAdminAuth();
+  const authenticatedFetch = useAuthenticatedFetch();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -41,11 +46,7 @@ export default function MatchesPage() {
         params.append('search', searchQuery);
       }
 
-      const response = await fetch(`/api/admin/matches?${params}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await authenticatedFetch(`/api/admin/matches?${params}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch matches');
@@ -72,11 +73,8 @@ export default function MatchesPage() {
     if (!token) return;
 
     try {
-      const response = await fetch(`/api/admin/matches/${matchId}`, {
+      const response = await authenticatedFetch(`/api/admin/matches/${matchId}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) {
@@ -94,11 +92,8 @@ export default function MatchesPage() {
     if (!token) return;
 
     try {
-      const response = await fetch(`/api/admin/matches/${matchId}/activate`, {
+      const response = await authenticatedFetch(`/api/admin/matches/${matchId}/activate`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) {
@@ -117,11 +112,8 @@ export default function MatchesPage() {
     if (!token) return;
 
     try {
-      const response = await fetch(`/api/admin/matches/${matchId}/end`, {
+      const response = await authenticatedFetch(`/api/admin/matches/${matchId}/end`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       if (!response.ok) {
@@ -175,20 +167,32 @@ export default function MatchesPage() {
     {
       accessorKey: 'start_time',
       header: 'Start Time',
-      cell: ({ row }) => (
-        <div className="text-sm">
-          {format(new Date(row.original.start_time), 'MMM d, yyyy HH:mm')}
-        </div>
-      ),
+      cell: ({ row }) => {
+        try {
+          return (
+            <div className="text-sm">
+              {format(new Date(row.original.start_time), 'MMM d, yyyy HH:mm')}
+            </div>
+          );
+        } catch {
+          return <div className="text-sm text-gray-500">Invalid date</div>;
+        }
+      },
     },
     {
       accessorKey: 'end_time',
       header: 'End Time',
-      cell: ({ row }) => (
-        <div className="text-sm">
-          {format(new Date(row.original.end_time), 'MMM d, yyyy HH:mm')}
-        </div>
-      ),
+      cell: ({ row }) => {
+        try {
+          return (
+            <div className="text-sm">
+              {format(new Date(row.original.end_time), 'MMM d, yyyy HH:mm')}
+            </div>
+          );
+        } catch {
+          return <div className="text-sm text-gray-500">Invalid date</div>;
+        }
+      },
     },
     {
       id: 'votes',

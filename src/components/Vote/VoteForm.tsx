@@ -202,7 +202,7 @@ export function VoteForm({
             ${
               selectedTeam
                 ? 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-300'
-                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : 'bg-gray-700 text-gray-400 cursor-not-allowed'
             }
           `}
           aria-label="Submit vote"
@@ -232,7 +232,7 @@ export function VoteForm({
 
         {/* Form Instructions */}
         <div className="text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-400">
             By submitting, you agree to our{' '}
             <a
               href="/terms"

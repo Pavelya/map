@@ -15,13 +15,20 @@ import type { MapOptions, StyleSpecification } from 'maplibre-gl';
  * 2. Maptiler (free tier: 100k tile loads/month with API key)
  */
 
-// Dark theme style using free OSM tiles
+// Dark theme style using free OSM tiles with multiple fallbacks
 const OSM_DARK_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     'osm-tiles': {
       type: 'raster',
-      tiles: ['https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png'],
+      tiles: [
+        // Primary: Direct from OpenStreetMap (reliable, unlimited, free)
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        // Fallback 1: OSM mirror A
+        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        // Fallback 2: OSM mirror B
+        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      ],
       tileSize: 256,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     },
@@ -32,19 +39,26 @@ const OSM_DARK_STYLE: StyleSpecification = {
       type: 'raster',
       source: 'osm-tiles',
       minzoom: 0,
-      maxzoom: 18,
+      maxzoom: 19,
     },
   ],
   glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
 };
 
-// Light theme (alternative)
+// Light theme (alternative) with multiple fallbacks
 const OSM_LIGHT_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     'osm-tiles': {
       type: 'raster',
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tiles: [
+        // Primary: Direct from OpenStreetMap (reliable, unlimited, free)
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        // Fallback 1: OSM mirror A
+        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        // Fallback 2: OSM mirror B
+        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      ],
       tileSize: 256,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     },
@@ -115,12 +129,14 @@ export function getMaptilerStyle(styleId: string = 'dataviz-dark'): string | nul
 }
 
 /**
- * Create full MapLibre map options
+ * Create full MapLibre map options with fallback handling
  */
 export function createMapOptions(container: HTMLDivElement): MapOptions {
   // Try to use Maptiler if key is available, otherwise fall back to OSM
   const maptilerStyle = getMaptilerStyle();
   const style = maptilerStyle || mapConfig.style;
+
+  console.log('[Map] Using tile source:', maptilerStyle ? 'Maptiler' : 'OpenStreetMap (free, unlimited)');
 
   return {
     container,
@@ -134,6 +150,15 @@ export function createMapOptions(container: HTMLDivElement): MapOptions {
     touchPitch: mapConfig.touchPitch,
     fadeDuration: mapConfig.fadeDuration,
     trackResize: mapConfig.trackResize,
+    // Add tile loading configuration
+    maxTileCacheSize: 50, // Limit cache to avoid memory issues
+    transformRequest: (url: string, resourceType?: string) => {
+      // Log tile requests for debugging (sample 1% to avoid spam)
+      if (resourceType === 'Tile' && Math.random() < 0.01) {
+        console.log('[Map] Loading tile:', url);
+      }
+      return { url };
+    },
   };
 }
 

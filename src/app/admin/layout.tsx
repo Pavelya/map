@@ -25,19 +25,27 @@ const navigation = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { admin, isAuthenticated, logout } = useAdminAuth();
+  const { admin, isAuthenticated, logout, hasHydrated } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   useEffect(() => {
+    // Wait for hydration before checking auth
+    if (!hasHydrated) return;
+
     // Redirect to login if not authenticated (except on login page)
     if (!isAuthenticated && !pathname.includes('/admin/login')) {
       router.replace('/admin/login');
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, pathname, router, hasHydrated]);
 
   // Don't render layout for login page
   if (pathname.includes('/admin/login')) {
     return <>{children}</>;
+  }
+
+  // Show loading state while hydrating
+  if (!hasHydrated) {
+    return null;
   }
 
   // Don't render if not authenticated

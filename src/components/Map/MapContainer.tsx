@@ -58,9 +58,17 @@ export function MapLoadingSkeleton() {
 interface MapErrorProps {
   error: Error;
   onRetry?: () => void;
+  retryCount?: number;
+  maxRetries?: number;
 }
 
-export function MapError({ error, onRetry }: MapErrorProps) {
+export function MapError({ error, onRetry, retryCount = 0, maxRetries = 3 }: MapErrorProps) {
+  const canRetry = retryCount < maxRetries;
+
+  // Determine error type for better messaging
+  const isTileError = error.message.includes('tile');
+  const isNetworkError = error.message.includes('connection') || error.message.includes('network');
+
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-900">
       <div className="text-center max-w-md px-4">
@@ -79,16 +87,54 @@ export function MapError({ error, onRetry }: MapErrorProps) {
             />
           </svg>
         </div>
+
         <h3 className="text-lg font-semibold text-white mb-2">Failed to Load Map</h3>
         <p className="text-gray-400 text-sm mb-4">{error.message}</p>
-        {onRetry && (
-          <button
-            onClick={onRetry}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-colors"
-          >
-            Retry
-          </button>
+
+        {isTileError && (
+          <p className="text-xs text-gray-500 mb-4">
+            The map tile server may be experiencing issues. This is usually temporary.
+          </p>
         )}
+
+        {isNetworkError && (
+          <p className="text-xs text-gray-500 mb-4">
+            Please check your internet connection and try again.
+          </p>
+        )}
+
+        <div className="flex flex-col gap-2">
+          {onRetry && canRetry && (
+            <button
+              onClick={onRetry}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-colors"
+            >
+              Retry {retryCount > 0 && `(${retryCount}/${maxRetries})`}
+            </button>
+          )}
+
+          {!canRetry && (
+            <p className="text-xs text-red-400 mb-2">
+              Maximum retry attempts reached. Please refresh the page.
+            </p>
+          )}
+
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md text-sm font-medium transition-colors"
+          >
+            Refresh Page
+          </button>
+        </div>
+
+        <details className="mt-4 text-left">
+          <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
+            Technical Details
+          </summary>
+          <pre className="mt-2 text-xs bg-gray-800 p-2 rounded overflow-auto text-left">
+            {error.stack || error.message}
+          </pre>
+        </details>
       </div>
     </div>
   );

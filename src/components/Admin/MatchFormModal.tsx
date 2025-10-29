@@ -7,6 +7,7 @@ import { z } from 'zod';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, Upload, AlertCircle } from 'lucide-react';
 import { useAdminAuth } from '@/stores/admin-auth';
+import { useAuthenticatedFetch } from '@/hooks/useAuthenticatedFetch';
 import type { Match } from '@/types/admin';
 import { MatchSchema } from '@/lib/validations/match';
 
@@ -21,6 +22,7 @@ interface MatchFormModalProps {
 
 export function MatchFormModal({ open, onClose, match, onSuccess }: MatchFormModalProps) {
   const { token } = useAdminAuth();
+  const authenticatedFetch = useAuthenticatedFetch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [teamALogoFile, setTeamALogoFile] = useState<File | null>(null);
@@ -99,11 +101,8 @@ export function MatchFormModal({ open, onClose, match, onSuccess }: MatchFormMod
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch('/api/admin/upload', {
+    const response = await authenticatedFetch('/api/admin/upload', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: formData,
     });
 
@@ -133,20 +132,25 @@ export function MatchFormModal({ open, onClose, match, onSuccess }: MatchFormMod
         teamBLogoUrl = await uploadLogo(teamBLogoFile);
       }
 
+      // Convert datetime-local format to ISO string
+      const startTime = new Date(data.startTime).toISOString();
+      const endTime = new Date(data.endTime).toISOString();
+
       const payload = {
         ...data,
-        teamALogoUrl,
-        teamBLogoUrl,
+        startTime,
+        endTime,
+        teamALogoUrl: teamALogoUrl || undefined,
+        teamBLogoUrl: teamBLogoUrl || undefined,
       };
 
       const url = match ? `/api/admin/matches/${match.id}` : '/api/admin/matches';
       const method = match ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await authenticatedFetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });

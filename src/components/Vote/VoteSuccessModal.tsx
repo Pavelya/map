@@ -53,15 +53,15 @@ export function VoteSuccessModal({
 
         {/* Content */}
         <Dialog.Content
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl focus:outline-none data-[state=open]:animate-contentShow"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md p-6 bg-gray-900 rounded-2xl shadow-2xl focus:outline-none data-[state=open]:animate-contentShow"
           aria-describedby="vote-success-description"
         >
           {/* Close button */}
           <Dialog.Close
-            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-colors"
             aria-label="Close"
           >
-            <X className="w-5 h-5 text-gray-500" aria-hidden="true" />
+            <X className="w-5 h-5 text-gray-400" aria-hidden="true" />
           </Dialog.Close>
 
           {/* Success icon and message */}
@@ -78,12 +78,12 @@ export function VoteSuccessModal({
             </div>
 
             <div>
-              <Dialog.Title className="text-2xl font-bold text-gray-900 mb-2">
+              <Dialog.Title className="text-2xl font-bold text-white mb-2">
                 Vote Submitted!
               </Dialog.Title>
               <Dialog.Description
                 id="vote-success-description"
-                className="text-gray-600"
+                className="text-gray-300"
               >
                 Your vote for{' '}
                 <span className="font-semibold" style={{ color: teamColor }}>
@@ -95,8 +95,8 @@ export function VoteSuccessModal({
           </div>
 
           {/* Current stats */}
-          <div className="bg-gray-50 rounded-xl p-4 space-y-4">
-            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700">
+          <div className="bg-gray-800 rounded-xl p-4 space-y-4">
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-300">
               <TrendingUp className="w-4 h-4" aria-hidden="true" />
               Current Results
             </div>
@@ -105,12 +105,12 @@ export function VoteSuccessModal({
               {/* Team A */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray-700">Team A</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-medium text-gray-300">Team A</span>
+                  <span className="font-semibold text-white">
                     {teamAPercentage}%
                   </span>
                 </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500"
                     style={{ width: `${teamAPercentage}%` }}
@@ -126,12 +126,12 @@ export function VoteSuccessModal({
               {/* Team B */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-gray-700">Team B</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-medium text-gray-300">Team B</span>
+                  <span className="font-semibold text-white">
                     {teamBPercentage}%
                   </span>
                 </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
                     style={{ width: `${teamBPercentage}%` }}
@@ -145,10 +145,10 @@ export function VoteSuccessModal({
               </div>
 
               {/* Total votes */}
-              <div className="flex items-center justify-center gap-2 pt-2 text-sm text-gray-600">
+              <div className="flex items-center justify-center gap-2 pt-2 text-sm text-gray-400">
                 <Users className="w-4 h-4" aria-hidden="true" />
                 <span>
-                  <strong className="text-gray-900">
+                  <strong className="text-white">
                     {currentStats.totalVotes.toLocaleString()}
                   </strong>{' '}
                   total votes

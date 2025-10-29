@@ -122,11 +122,14 @@ export async function POST(request: NextRequest) {
       // Create response with tokens
       const response = NextResponse.json(
         {
-          accessToken: authResponse.accessToken,
-          admin: {
-            id: authResponse.admin.id,
-            username: authResponse.admin.username,
-            email: authResponse.admin.email,
+          success: true,
+          data: {
+            admin: {
+              id: authResponse.admin.id,
+              username: authResponse.admin.username,
+              email: authResponse.admin.email,
+            },
+            token: authResponse.accessToken,
           },
         },
         { status: 200 }

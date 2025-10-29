@@ -58,7 +58,7 @@ export function CaptchaField({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-900">
+      <label className="block text-sm font-medium text-white">
         <Shield className="inline-block w-4 h-4 mr-1 text-gray-500" aria-hidden="true" />
         Security verification <span className="text-red-600" aria-label="required">*</span>
       </label>
